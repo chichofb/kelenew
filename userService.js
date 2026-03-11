@@ -1,4 +1,15 @@
 /**
+
+const serverMsg = err.response?.data?.message
+                || err.response?.data?.error
+                || (typeof err.response?.data === 'string' ? err.response.data : null)
+                || err.message;
+            setError(`Fehler beim Laden der Benutzer (${err.response?.status ?? '?'}): ${serverMsg}`);
+
+
+
+
+
  * USER SERVICE - API-Kommunikationsschicht
  * 
  * Diese Datei verwaltet alle HTTP-Anfragen zum Backend:
