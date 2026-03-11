@@ -1,15 +1,4 @@
 /**
-
-const serverMsg = err.response?.data?.message
-                || err.response?.data?.error
-                || (typeof err.response?.data === 'string' ? err.response.data : null)
-                || err.message;
-            setError(`Fehler beim Laden der Benutzer (${err.response?.status ?? '?'}): ${serverMsg}`);
-
-
-
-
-
  * USER SERVICE - API-Kommunikationsschicht
  * 
  * Diese Datei verwaltet alle HTTP-Anfragen zum Backend:
@@ -124,13 +113,23 @@ const userService = {
                 body.roleIds = searchParams.roleIds;
             }
 
-            // contextOrgUuid als Query-Parameter (aus Keycloak-Token falls vorhanden)
-            const contextOrgUuid = keycloakInstance?.tokenParsed?.orgUid
-                || keycloakInstance?.tokenParsed?.contextOrgUuid
-                || keycloakInstance?.tokenParsed?.organisationUuid
+            // contextOrgUuid als Query-Parameter (aus Keycloak-Token)
+            const token = keycloakInstance?.tokenParsed;
+            const contextOrgUuid = token?.contextOrgUuid
+                || token?.orgUuid
+                || token?.orgUid
+                || token?.organisationUuid
+                || token?.organisationUid
+                || token?.org_id
+                || token?.orgId
+                || token?.context_org_uuid
                 || '';
 
-            const queryParams = contextOrgUuid ? `?contextOrgUuid=${contextOrgUuid}` : '';
+            if (!contextOrgUuid) {
+                console.warn('contextOrgUuid nicht im Token gefunden! Verfügbare Claims:', Object.keys(token || {}));
+            }
+
+            const queryParams = contextOrgUuid ? `?contextOrgUuid=${encodeURIComponent(contextOrgUuid)}` : '';
 
             console.log('POST /api/users/list' + queryParams, body);
 
